@@ -35,4 +35,4 @@ WORKDIR /data
 VOLUME /data
 EXPOSE 4567/tcp
 ENTRYPOINT ["dumb-init"]
-CMD ["gollum", "--host 0.0.0.0", "--port 4567", "/data/wiki"]
+CMD ["gollum", "--host", "0.0.0.0", "--port", "4567", "/data/wiki"]
