@@ -24,7 +24,7 @@ jobs:
 
       - name: Publish
         env:
-          DOCKERHUB_REPO: gollum
+          DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_USERNAME }}/gollum
           PLATFORMS: linux/amd64,linux/arm64
         run: |
           # Build on local architecture and run a very basic curl test
@@ -38,4 +38,4 @@ jobs:
           GOLLUM_VERSION=$(docker run --rm gollum-test gollum --version | cut -d ' ' -f 2)
 
           # Build & push
-          docker buildx build --platform "${PLATFORMS}" --push --tag  "${DOCKERHUB_USERNAME}/${DOCKERHUB_REPO}:${GOLLUM_VERSION}" .
+          docker buildx build --platform "${PLATFORMS}" --push --tag  "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" .
