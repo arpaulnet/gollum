@@ -40,4 +40,5 @@ jobs:
         docker buildx build \
           --platform linux/386,linux/amd64 \
           --push \
-          --tag  "${DOCKERHUB_USERNAME}/${DOCKERHUB_REPO}:${GOLLUM_VERSION}"
+          --tag  "${DOCKERHUB_USERNAME}/${DOCKERHUB_REPO}:${GOLLUM_VERSION}" \
+          .
