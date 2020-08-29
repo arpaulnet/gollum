@@ -31,7 +31,7 @@ jobs:
 
         # Setup docker buildkit & qemu for cross-architecture build
         docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
-        systemctl restart docker.service
+        sudo systemctl restart docker.service
         docker buildx inspect --bootstrap
         docker buildx install
 
