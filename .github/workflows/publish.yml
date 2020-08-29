@@ -10,33 +10,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Publish
-      env:
-        DOCKER_BUILDKIT: 1
-        DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKERHUB_REPO: gollum
-        PLATFORMS: linux/amd64,linux/arm64
-      run: |
-        # Build on local architecture and run a very basic curl test
-        docker build -t gollum-test .
-        docker run --rm -d -p "4567:4567" --name gollum-test gollum-test
-        sleep 10
-        curl -vL http://localhost:4567
-        docker kill gollum-test
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        # Grab the gollum version from the test image
-        GOLLUM_VERSION=$(docker run --rm gollum-test gollum --version | cut -d ' ' -f 2)
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
-        # Setup docker buildx for x-platform builds
-        docker run --rm --privileged multiarch/qemu-user-static --reset --persistent yes
-        sudo systemctl restart docker.service
-        docker buildx inspect --bootstrap
-        docker buildx install
-        docker buildx create --use --driver docker-container --platform "${PLATFORMS}"
+      - name: Setup Docker Buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
 
-        # Login, build, push
-        printf "${DOCKERHUB_ACCESS_TOKEN}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-        docker buildx build --platform "${PLATFORMS}" --push --tag  "${DOCKERHUB_USERNAME}/${DOCKERHUB_REPO}:${GOLLUM_VERSION}" .
+      - name: Publish
+        env:
+          DOCKERHUB_REPO: gollum
+          PLATFORMS: linux/amd64,linux/arm64
+        run: |
+          # Build on local architecture and run a very basic curl test
+          docker build -t gollum-test .
+          docker run --rm -d -p "4567:4567" --name gollum-test gollum-test
+          sleep 10
+          curl -vL http://localhost:4567
+          docker kill gollum-test
+
+          # Grab the gollum version from the test image
+          GOLLUM_VERSION=$(docker run --rm gollum-test gollum --version | cut -d ' ' -f 2)
+
+          # Build & push
+          docker buildx build --platform "${PLATFORMS}" --push --tag  "${DOCKERHUB_USERNAME}/${DOCKERHUB_REPO}:${GOLLUM_VERSION}" .
