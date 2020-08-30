@@ -45,8 +45,6 @@ jobs:
             --tag "${BUILD_TAG}" \
             .
 
-          docker image ls
-
       - name: Basic Test
         run: |
           docker run --rm -d -p "4567:4567" --name test "${BUILD_TAG}"
