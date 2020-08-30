@@ -31,9 +31,7 @@ jobs:
         id: buildx-cache
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          key: ${{ runner.os }}-buildx
 
       - name: Build and push with github SHA
         run: |
