@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_USERNAME }}/gollum
+      PLATFORMS: linux/amd64
+      BUILD_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/gollum:${{ github.sha}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -22,20 +26,52 @@ jobs:
       - name: Setup Docker Buildx
         uses: crazy-max/ghaction-docker-buildx@v3
 
-      - name: Publish
-        env:
-          DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_USERNAME }}/gollum
-          PLATFORMS: linux/amd64,linux/arm64
+      - name: Buildx Cache
+        uses: actions/cache@v2
+        id: buildx-cache
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push with github SHA
         run: |
-          # Build on local architecture and run a very basic curl test
-          docker build -t gollum-test .
-          docker run --rm -d -p "4567:4567" --name gollum-test gollum-test
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --output "type=image,push=true" \
+            --platform "${PLATFORMS}" \
+            --pull \
+            --tag "${BUILD_TAG}" \
+            --file ./Dockerfile
+
+      - name: Basic Test
+        run: |
+          docker run --rm -d -p "4567:4567" --name test "${BUILD_TAG}"
           sleep 10
-          curl -vL http://localhost:4567
-          docker kill gollum-test
+          curl -vL -o /dev/null http://localhost:4567
+          docker kill test
 
-          # Grab the gollum version from the test image
-          GOLLUM_VERSION=$(docker run --rm gollum-test gollum --version | cut -d ' ' -f 2)
+      - name: Push with version tag
+        run: |
+          GOLLUM_VERSION=$(docker run --rm "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --output "type=image,push=true" \
+            --platform "${PLATFORMS}" \
+            --pull \
+            --tag "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" \
+            --file ./Dockerfile
 
-          # Build & push
-          docker buildx build --platform "${PLATFORMS}" --push --tag  "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" .
+      - name: Push with latest tag
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --output "type=image,push=true" \
+            --platform "${PLATFORMS}" \
+            --tag "${DOCKERHUB_REPO}:latest" \
+            --pull \
+            --file ./Dockerfile
