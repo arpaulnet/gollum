@@ -19,6 +19,7 @@ RUN gem install \
     gollum \
     rdoc \
     webrick \
+    commonmarker \
   && rm -rf /usr/lib/ruby/gems/*/cache/*
 
 RUN mkdir -p /data/wiki \
