@@ -33,7 +33,7 @@ jobs:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx
 
-      - name: Build and push with github SHA
+      - name: Build and push with github sha
         run: |
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
