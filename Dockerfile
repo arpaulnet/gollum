@@ -27,13 +27,13 @@ RUN gem install \
     RedCloth \
   && rm -rf /usr/lib/ruby/gems/*/cache/*
 
-RUN mkdir -p /data/wiki \
-  && cd /data/wiki \
+RUN mkdir -p /wiki \
+  && cd /wiki \
   && git init \
   && gollum --versions
   
 FROM base as gollum
-COPY --from=build /data              /data
+COPY --from=build /wiki              /wiki
 COPY --from=build /usr/bin/dumb-init /usr/bin/dumb-init
 COPY --from=build /usr/bin/gollum    /usr/bin/gollum
 COPY --from=build /usr/lib/ruby/gems /usr/lib/ruby/gems
@@ -41,4 +41,4 @@ WORKDIR /data
 VOLUME /data
 EXPOSE 4567/tcp
 ENTRYPOINT ["dumb-init"]
-CMD ["gollum", "--host", "0.0.0.0", "--port", "4567", "/data/wiki"]
+CMD ["gollum", "--host", "0.0.0.0", "--port", "4567", "/wiki"]
