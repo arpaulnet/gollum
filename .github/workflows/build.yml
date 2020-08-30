@@ -55,7 +55,9 @@ jobs:
       - name: Push
         if: success()
         run: |
-          GOLLUM_VERSION=$(docker run --rm "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
+          GOLLUM_FULL_VERSION=$(docker run --rm "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
+          GOLLUM_MAJOR_VERSION=$(printf "${GOLLUM_FULL_VERSION}" | cut -d '.' -f 1)
+          GOLLUM_MINOR_VERSION=$(printf "${GOLLUM_FULL_VERSION}" | cut -d '.' -f 1-2)
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
             --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -63,7 +65,9 @@ jobs:
             --platform "${PLATFORMS}" \
             --pull \
             --tag "${DOCKERHUB_REPOSITORY}:latest" \
-            --tag "${DOCKERHUB_REPOSITORY}:${GOLLUM_VERSION}" \
+            --tag "${DOCKERHUB_REPOSITORY}:${GOLLUM_FULL_VERSION}" \
+            --tag "${DOCKERHUB_REPOSITORY}:${GOLLUM_MAJOR_VERSION}" \
+            --tag "${DOCKERHUB_REPOSITORY}:${GOLLUM_MINOR_VERSION}" \
             .
 
       - name: Update Dockerhub Description
