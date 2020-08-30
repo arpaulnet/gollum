@@ -61,15 +61,16 @@ jobs:
             --platform "${PLATFORMS}" \
             --pull \
             --tag "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" \
+            --tag "${DOCKERHUB_REPO}:latest" \
             .
 
-      - name: Push with latest tag
-        run: |
-          docker buildx build \
-            --cache-from "type=local,src=/tmp/.buildx-cache" \
-            --cache-to "type=local,dest=/tmp/.buildx-cache" \
-            --output "type=image,push=true" \
-            --platform "${PLATFORMS}" \
-            --tag "${DOCKERHUB_REPO}:latest" \
-            --pull \
-            .
+            #      - name: Push with latest tag
+            #        run: |
+            #          docker buildx build \
+            #            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            #            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            #            --output "type=image,push=true" \
+            #            --platform "${PLATFORMS}" \
+            #            --tag "${DOCKERHUB_REPO}:latest" \
+            #            --pull \
+            #            .
