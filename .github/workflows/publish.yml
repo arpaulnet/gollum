@@ -44,6 +44,8 @@ jobs:
             --tag "${BUILD_TAG}" \
             .
 
+          docker image ls
+
       - name: Basic Test
         run: |
           docker run --rm -d -p "4567:4567" --name test "${BUILD_TAG}"
@@ -51,7 +53,7 @@ jobs:
           curl -vL -o /dev/null http://localhost:4567
           docker kill test
 
-      - name: Push with version tag
+      - name: Push
         run: |
           GOLLUM_VERSION=$(docker run --rm "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
           docker buildx build \
@@ -63,14 +65,3 @@ jobs:
             --tag "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" \
             --tag "${DOCKERHUB_REPO}:latest" \
             .
-
-            #      - name: Push with latest tag
-            #        run: |
-            #          docker buildx build \
-            #            --cache-from "type=local,src=/tmp/.buildx-cache" \
-            #            --cache-to "type=local,dest=/tmp/.buildx-cache" \
-            #            --output "type=image,push=true" \
-            #            --platform "${PLATFORMS}" \
-            #            --tag "${DOCKERHUB_REPO}:latest" \
-            #            --pull \
-            #            .
