@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_USERNAME }}/gollum
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_USERNAME }}/gollum
       PLATFORMS: linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
       BUILD_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/gollum:${{ github.sha}}
     steps:
@@ -21,7 +22,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Setup Docker Buildx
         uses: crazy-max/ghaction-docker-buildx@v3
@@ -54,6 +55,7 @@ jobs:
           docker kill test
 
       - name: Push
+        if: success()
         run: |
           GOLLUM_VERSION=$(docker run --rm "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
           docker buildx build \
@@ -62,6 +64,12 @@ jobs:
             --output "type=image,push=true" \
             --platform "${PLATFORMS}" \
             --pull \
-            --tag "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" \
-            --tag "${DOCKERHUB_REPO}:latest" \
+            --tag "${DOCKERHUB_REPOSITORY}:latest" \
+            --tag "${DOCKERHUB_REPOSITORY}:${GOLLUM_VERSION}" \
             .
+
+      - name: Update Dockerhub Description
+        if: success()
+        uses: peter-evans/dockerhub-description@v2.3.1
+        env:
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
