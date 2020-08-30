@@ -20,6 +20,11 @@ RUN gem install \
     rdoc \
     webrick \
     commonmarker \
+    asciidoctor \
+    creole \
+    wikicloth \
+    org-ruby \
+    RedCloth \
   && rm -rf /usr/lib/ruby/gems/*/cache/*
 
 RUN mkdir -p /data/wiki \
