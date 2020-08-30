@@ -44,7 +44,7 @@ jobs:
             --platform "${PLATFORMS}" \
             --pull \
             --tag "${BUILD_TAG}" \
-            --file ./Dockerfile
+            .
 
       - name: Basic Test
         run: |
@@ -63,7 +63,7 @@ jobs:
             --platform "${PLATFORMS}" \
             --pull \
             --tag "${DOCKERHUB_REPO}:${GOLLUM_VERSION}" \
-            --file ./Dockerfile
+            .
 
       - name: Push with latest tag
         run: |
@@ -74,4 +74,4 @@ jobs:
             --platform "${PLATFORMS}" \
             --tag "${DOCKERHUB_REPO}:latest" \
             --pull \
-            --file ./Dockerfile
+            .
