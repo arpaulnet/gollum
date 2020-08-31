@@ -9,7 +9,7 @@ In addition to `latest`, this repository uses semantic versioned tags:
 
 ## Architectures
 This repository uses multi-platform images via Docker manifests.  You do not need to use a platform-specific tag; Docker will automatically choose the appropriate architecture.  Currently, the supported architectures are:
-* `x86`/`i386`/`ia-32`
+* `x86`/`386`
 * `x86_64`/`amd64`
 * `arm`/`armv6`
 * `armhf`/`armv7`
