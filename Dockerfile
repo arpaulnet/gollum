@@ -40,5 +40,5 @@ COPY --from=build /usr/lib/ruby/gems /usr/lib/ruby/gems
 WORKDIR /wiki
 VOLUME /wiki
 EXPOSE 4567/tcp
-ENTRYPOINT ["dumb-init"]
-CMD ["gollum", "--host", "0.0.0.0", "--port", "4567", "--base-path", "/wiki", "/wiki"]
+ENTRYPOINT ["/usr/bin/dumb-init"]
+CMD ["/usr/bin/gollum", "--host", "0.0.0.0", "--port", "4567", "--base-path", "/wiki", "/wiki"]
