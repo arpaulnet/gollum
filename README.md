@@ -3,9 +3,9 @@
 
 ## Tags
 In addition to `latest`, this repository uses semantic versioned tags:
-* major version (ex: `5`)
-* major & minor version (ex: `5.1.1`)
 * full version (ex: `5.1.1`)
+* major & minor version (ex: `5.1`)
+* major version (ex: `5`)
 
 ## Architectures
 This repository uses multi-platform images via Docker manifests.  You do not need to use a platform-specific tag; Docker will automatically choose the appropriate architecture.  Currently, the supported architectures are:
