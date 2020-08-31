@@ -15,7 +15,6 @@ This repository uses multi-platform images via Docker manifests.  You do not nee
 * `armhf`/`armv7`
 * `arm64`
 * `ppc64le`
-* `s390x`
 
 ## Usage
 TODO

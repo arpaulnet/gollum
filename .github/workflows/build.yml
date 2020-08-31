@@ -12,7 +12,7 @@ jobs:
     env:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_USERNAME }}/gollum
-      PLATFORMS: linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+      PLATFORMS: linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le
       BUILD_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/gollum:${{ github.sha}}
     steps:
       - name: Checkout
