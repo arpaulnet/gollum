@@ -18,9 +18,12 @@ This repository uses multi-platform images via Docker manifests.  You do not nee
 
 ## Usage
 
-`docker run -d -v "${PWD}/wiki:/wiki" -p "4567:4567" -e "PUID=$(id -u)" -e "PGID=$(id -g)" arpaulnet/gollum`
+**docker run**:
+```bash
+$ docker run -d -v "${PWD}/wiki:/wiki" -p "4567:4567" -e "PUID=$(id -u)" -e "PGID=$(id -g)" arpaulnet/gollum`
+```
 
-`docker-compose.yml`
+**docker-compose**:
 ```yaml
 #...
 services:
