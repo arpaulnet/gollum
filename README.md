@@ -1,5 +1,5 @@
 # Gollum
-[Gollum](https://github.com/gollum/gollum) is a simple wiki system built on top of Git. This image is currently a work-in-progress.
+[Gollum](https://github.com/gollum/gollum) is a simple wiki system built on top of Git.
 
 ## Tags
 In addition to `latest`, this repository uses semantic versioned tags:
@@ -17,7 +17,42 @@ This repository uses multi-platform images via Docker manifests.  You do not nee
 * `ppc64le`
 
 ## Usage
-TODO
 
-## Configuration
-TODO
+`docker run -d -v "${PWD}/wiki:/wiki" -p "4567:4567" -e "PUID=$(id -u)" -e "PGID=$(id -g)" arpaulnet/gollum`
+
+`docker-compose.yml`
+```yaml
+#...
+services:
+  gollum:
+    image: arpaulnet/gollum
+    environment:
+      PGID: 1000
+      PUID: 1000
+      TZ: America/Denver
+    restart: unless-stopped
+```
+
+### Gollum Options
+[Gollum](https://github.com/gollum/gollum) has a number of [command line options](https://github.com/gollum/gollum#configuration) that can be passed at startup to configure it.  To use these commands, simply configure the docker command.  For example, if you wanted to set the HTTP base path to `.../my-custom-basepath`, you could run the container like so:
+
+`docker run ... arpaulnet/gollum gollum --base-path /my-custom-basepath`
+
+### Environment Variables
+| Environment Variable | Default | Description                             |
+|----------------------|---------|-----------------------------------------|
+| `PGID`               | `666`   | Process Group ID (use with bind mounts) |
+| `PUID`               | `666`   | Process User ID (use with bind mounts)  |
+| `TZ`                 | `UTC`   | TZ Database Name (ex: `America/Denver`) |
+
+## Markups
+[Gollum](https://github.com/gollum/gollum) supports a number of [Markups](https://github.com/gollum/gollum#markups). A default installation of Gollum supports `Markdown` and `RDoc`.  This repository also bundles:
+* `AsciiDoc`
+* `Creole`
+* `MediaWiki`
+* `Org`
+* `Textile`
+
+See Gollum's [Markups](https://github.com/gollum/gollum#markups) documentation for more information.
+
+This repository also uses `commonmarker` for markdwon rendering rather than the default `kramdown`.
