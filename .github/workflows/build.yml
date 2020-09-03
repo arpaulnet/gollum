@@ -55,7 +55,7 @@ jobs:
       - name: Push
         if: success()
         run: |
-          GOLLUM_FULL_VERSION=$(docker run --rm "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
+          GOLLUM_FULL_VERSION=$(docker run --rm -e S6_LOGGING=1 "${BUILD_TAG}" gollum --version | cut -d ' ' -f 2)
           GOLLUM_MAJOR_VERSION=$(printf "${GOLLUM_FULL_VERSION}" | cut -d '.' -f 1)
           GOLLUM_MINOR_VERSION=$(printf "${GOLLUM_FULL_VERSION}" | cut -d '.' -f 1-2)
           docker buildx build \
