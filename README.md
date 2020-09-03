@@ -44,7 +44,15 @@ services:
 ### Gollum Options
 [Gollum](https://github.com/gollum/gollum) has a number of [command line options](https://github.com/gollum/gollum#configuration) that can be passed at startup to configure it.  To use these commands, simply configure the docker command.  For example, if you wanted to set the HTTP base path to `.../my-custom-basepath`, you could run the container like so:
 
-`docker run ... arpaulnet/gollum gollum --base-path /my-custom-basepath`
+```bash
+docker run -d \
+  -v "${PWD}/wiki:/wiki" \
+  -p "4567:4567" \
+  -e "PUID=$(id -u)" \
+  -e "PGID=$(id -g)" \
+  arpaulnet/gollum \
+  gollum --base-path /my-custom-basepath
+```
 
 ### Environment Variables
 | Environment Variable | Default | Description                             |
