@@ -1,19 +1,20 @@
+##############################
 FROM alpine:3 as base
-RUN apk add --no-cache ruby
+##############################
+RUN apk add --no-cache \
+    ruby \
+    tzdata
 
+##############################
 FROM base as build
+##############################
 RUN apk add --no-cache \
     build-base \
     cmake \
     git \
     openssl-dev \
-    python3 \
-    py3-pip \
     ruby-dev \
     zlib-dev
-
-RUN pip3 install dumb-init
-
 RUN gem install \
     etc \
     gollum \
@@ -31,14 +32,22 @@ RUN mkdir -p /wiki \
   && cd /wiki \
   && git init \
   && gollum --versions
-  
+
+##############################  
 FROM base as gollum
+##############################
+COPY --from=arpaulnet/s6-overlay-stage:2.0 / /
 COPY --from=build /wiki              /wiki
-COPY --from=build /usr/bin/dumb-init /usr/bin/dumb-init
+COPY --from=build /wiki              /default/wiki
 COPY --from=build /usr/bin/gollum    /usr/bin/gollum
 COPY --from=build /usr/lib/ruby/gems /usr/lib/ruby/gems
+COPY              ./rootfs           /
 WORKDIR /wiki
 VOLUME /wiki
 EXPOSE 4567/tcp
-ENTRYPOINT ["/usr/bin/dumb-init"]
-CMD ["/usr/bin/gollum", "--host", "0.0.0.0", "--port", "4567", "--base-path", "/wiki", "/wiki"]
+ENV TZ=UTC \
+    PUID=666 \
+    PGID=666 \
+    HOME=/wiki
+ENTRYPOINT ["/init", "with-contenv", "s6-setuidgid", "app"]
+CMD ["gollum"]
