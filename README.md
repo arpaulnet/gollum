@@ -25,7 +25,7 @@ docker run -d \
   -p "4567:4567" \
   -e "PUID=$(id -u)" \
   -e "PGID=$(id -g)" \
-  arpaulnet/gollum`
+  arpaulnet/gollum
 ```
 
 **docker-compose**:
